@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Wall</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+</head>
+
+<body>
+    {% for message in messages %}
+        <p style="color:red">{{ message }}</p>
+    {% endfor %}
+    <div id="header" style="width: 100%; display:inline-block;">
+        <h1>Question Wall</h1>
+        <form action="/logout">
+            <button style="float: right;" type="submit" class="btn btn-danger">Logout</button>
+        </form>
+        <h3 style="position: relative">Welcome {{ user.first_name }} {{ user.last_name }}</h3>
+        <hr />
+    </div>
+
+
+    <div id="container">
+        <div id="post-message">
+            <p style="margin-left: 220px;">Post a message:</p>
+            <form action="/add_message" method="post">
+                {% csrf_token %}
+                <center>
+                    <textarea name="add-message" id="message" cols="120" rows="4"></textarea>
+                    <br />
+                    <button class="btn btn-primary" type="submit">Post a message</button>
+                </center>
+            </form>
+        </div>
+
+        <hr>
+
+
+        <h2>Wall Messages</h2>
+        {% if post_data %}
+        {% for post in post_data %}
+
+        <div id="body">
+            <div class="body-text" style="margin: 20px 10px 10px 300px;">
+                <h2>{{ post.user.first_name }} {{ post.created_at }}</h2>
+                <p>{{ post.message }}</p>
+                <!-- Delete post Function -->
+                {% if post.user.id == user.id %}
+                <a href="/message/delete/{{post.id}}">Delete Message</a>
+                {% endif %}
+
+                <h4>Comments: </h4>
+
+                {% if comment_data %}
+                {% for comment in comment_data %}
+                <ul>
+                    {% if comment.message.id == post.id %}
+                    <li>{{ comment.comment }} {{ comment.user.first_name }} {{ comment.created_at }}</li>
+
+                    <!-- Delete comment Function -->
+                    {% if user.id == comment.user.id %}
+
+                    <a href="/comment/delete/{{comment.id}}">Delete Comment</a>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                {% endfor %}
+                {% endif %}
+                <form action="/add_comment" method="POST">
+                    {% csrf_token %}
+                    <p>Post your comment</p>
+                    <input type="hidden" value="{{post.id}}" name="message_id">
+                    <textarea name="comment" id="comment" cols="50" rows="2"></textarea>
+                    <button class="btn btn-primary" type="submit">Post a comment</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</body>
+
+</html>
