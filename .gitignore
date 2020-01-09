@@ -4,3 +4,9 @@ venv/
 __pycache__/
 .vscode/
 db.sqlite3
+
+# inside settings.py
+# modify these lines
+DEBUG = False
+ALLOWED_HOSTS = [18.208.184.220]	
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")	
